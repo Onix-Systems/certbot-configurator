@@ -1,0 +1,10 @@
+FROM ubuntu:xenial
+
+ENV SHUNIT_FOLDER=/shunit
+
+RUN apt-get update && \
+    apt-get install -y \
+        git && \
+    apt-get clean && \
+    mkdir /shunit && \
+    git clone https://github.com/kward/shunit2.git /shunit
