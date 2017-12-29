@@ -10,3 +10,6 @@
 
   script:
     - docker run --rm -v $(pwd):/certbot-configurator -w /certbot-configurator/tests ${TEST_IMAGE} bash_unit run.sh
+
+  after_script:
+    - docker rmi ${TEST_IMAGE}
