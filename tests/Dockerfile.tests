@@ -7,6 +7,6 @@ RUN apt-get update && \
     apt-get install -y \
         sudo && \
     apt-get clean && \
-    adduser --disabled-password --quiet --disabled-login --gecos "" ${UNPRIVILEGED_USER} && \
+    adduser --disabled-password --quiet --disabled-login --gecos "" ${UNPRIVILEGED_USER}
 
 USER ${UNPRIVILEGED_USER}
