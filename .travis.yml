@@ -9,4 +9,4 @@
     - docker build -t ${TEST_IMAGE} -f tests/Dockerfile.tests .
 
   script:
-    - docker run --rm -v $(pwd):/certbot-configurator -w /certbot-configurator ${TEST_IMAGE} tests/run.sh
+    - docker run --rm -v $(pwd):/certbot-configurator ${TEST_IMAGE} /certbot-configurator/tests/run.sh
