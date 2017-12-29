@@ -2,6 +2,8 @@
   services:
     - docker
 
-  script:
+  before_install:
     - docker build -t certbot-configurator-tests -f Dockerfile.tests .
+
+  script:
     - docker run --rm -v $(pwd):/certbot-configurator -w /certbot-configurator certbot-configurator-tests ./run_tests.sh
