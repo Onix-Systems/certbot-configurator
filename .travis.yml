@@ -3,5 +3,5 @@
     - docker
 
   script:
-    - docker build -t certbot-configurator-tests -f Dockerfile.tests
+    - docker build -t certbot-configurator-tests -f Dockerfile.tests .
     - docker run --rm -v $(pwd):/certbot-configurator -w /certbot-configurator certbot-configurator-tests ./run_tests.sh
