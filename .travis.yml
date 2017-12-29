@@ -1,9 +1,12 @@
 ---
+  env:
+    TEST_IMAGE=certbot-configurator-tests
+
   services:
     - docker
 
   before_install:
-    - docker build -t certbot-configurator-tests -f tests/Dockerfile.tests .
+    - docker build -t ${TEST_IMAGE} -f tests/Dockerfile.tests .
 
   script:
-    - docker run --rm -v $(pwd):/certbot-configurator -w /certbot-configurator certbot-configurator-tests tests/run.sh
+    - docker run --rm -v $(pwd):/certbot-configurator -w /certbot-configurator ${TEST_IMAGE} tests/run.sh
