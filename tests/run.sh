@@ -20,7 +20,7 @@ SUDO=sudo
 # Check if shunit is available in local environment
 if [ -z "${SHUNIT_COMMAND}" ] || [ -z "$(which ${SHUNIT_COMMAND})" ]; then
     msg "${HELP_MESSAGE}"
-    error "Can not be found ${SHUNIT_COMMAND:-shunit}! Please fix."
+    error "Can not be found ${SHUNIT_COMMAND:-shunit}, please fix."
 fi
 
 # Check if ${TEST_SCRIPT} is available for testing
