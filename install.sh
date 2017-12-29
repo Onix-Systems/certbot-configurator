@@ -6,7 +6,7 @@ PARAMETERS_COUNT=$#
 MODE=standalone
 WEB_ROOT_FOLDER=""
 SHOW_HELP=false
-ONLY_CHECK=false
+[ -z "${CHECK}"] || CHECK=false
 HELP_MESSAGE="Usage: ./$(basename $0) [OPTION]
 Script for installing and configuring letsencrypt certificates usage.
 Maintainer: devops@onix-systems.com
