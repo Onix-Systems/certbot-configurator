@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # file: tests/run.sh
 
 cd $(dirname $0)
@@ -30,10 +30,13 @@ fi
 
 msg "Running unit tests against $(basename $TEST_SCRIPT)"
 
+#!/bin/sh
+
 testAdministrativeRights() {
     OPTIONS="-m ${STANDALONE_MODE} -d ${DOMAIN_NAME}"
-    ${TEST_SCRIPT} ${OPTIONS}
+    ${TEST_SCRIPT} ${OPTIONS} >$stdoutF 2>&1
     rtrn=$?
+    echo ${stdoutF}
     assertTrue "Running script inside the unprivileged user has to cause error." "[ ${rtrn} -ne 0  ]"
 }
 
