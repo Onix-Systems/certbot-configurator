@@ -1,18 +1,12 @@
 FROM ubuntu:xenial
 
-ENV SHUNIT_FOLDER=/shunit \
-    UNPRIVILEGED_USER=user \
+ENV UNPRIVILEGED_USER=user \
     TERM=xterm
-
-ENV SHUNIT_PATH=../../${SHUNIT_FOLDER}/shunit2
 
 RUN apt-get update && \
     apt-get install -y \
-        git \
         sudo && \
     apt-get clean && \
-    mkdir ${SHUNIT_FOLDER} && \
-    git clone https://github.com/kward/shunit2.git ${SHUNIT_FOLDER} && \
-    adduser --disabled-password --quiet --disabled-login --gecos "" ${UNPRIVILEGED_USER}
+    adduser --disabled-password --quiet --disabled-login --gecos "" ${UNPRIVILEGED_USER} && \
 
 USER ${UNPRIVILEGED_USER}
