@@ -1,18 +1,20 @@
 FROM ubuntu:xenial
 
-ENV SHUNIT_SOURCE_FOLDER=/shunit \
-    UNPRIVILEGED_USER=user \
+LABEL maintainer="devops@onix-systems.com"
+
+ENV USER=user \
     TERM=xterm \
-    SHUNIT_COMMAND=shunit2
+    SOURCE_FOLDER=/source
 
 RUN apt-get update && \
     apt-get install -y \
         git \
         sudo && \
     apt-get clean && \
-    adduser --disabled-password --quiet --disabled-login --gecos "" ${UNPRIVILEGED_USER} && \
-    mkdir -p ${SHUNIT_SOURCE_FOLDER} && \
-    git clone https://github.com/kward/shunit2.git ${SHUNIT_SOURCE_FOLDER} && \
-    ln -s ${SHUNIT_SOURCE_FOLDER}/shunit2 /usr/sbin/${SHUNIT_COMMAND}
+    mkdir -p ${SOURCE_FOLDER} && \
+    git clone https://github.com/pgrange/bash_unit.git ${SOURCE_FOLDER} && \
+    ln -s ${SOURCE_FOLDER}/bash_unit /usr/sbin/bash_unit && \
+    adduser --disabled-password --quiet --disabled-login --gecos "" ${USER} && \
+    echo "${USER} ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/${USER}
 
-USER ${UNPRIVILEGED_USER}
+USER ${USER}

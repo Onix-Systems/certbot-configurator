@@ -6,6 +6,7 @@ PARAMETERS_COUNT=$#
 MODE=standalone
 WEB_ROOT_FOLDER=""
 SHOW_HELP=false
+CHECK_REQUIREMENTS_ONLY=false
 HELP_MESSAGE="Usage: ./$(basename $0) [OPTION]
 Script for installing and configuring letsencrypt certificates usage.
 Maintainer: devops@onix-systems.com
@@ -30,7 +31,7 @@ do
     key="$1"
     case $key in
         -m|--mode)
-            if [ "$(echo $2 | grep '^standalone$\|^webroot$')" != "" ]; then MODE="$2";
+            if [ "$(echo $2 | grep '^standalone$\|^webroot$\|^check$')" != "" ]; then MODE="$2";
             else echo "ERROR! Unsupported mode. See help."; exit 1; fi
             shift
         ;;
@@ -63,4 +64,9 @@ fi
 # Check root rights
 if [ "$(id -u)" -ne 0 ]; then
     error "Administrative rights are required."
+fi
+
+# If selected mode check, then -> exit without any further execution
+if [ "${MODE}" == "check" ]; then
+    msg "Was used check only mode." 0
 fi

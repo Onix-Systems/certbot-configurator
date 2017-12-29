@@ -1,43 +1,35 @@
-#!/bin/sh
+#!/bin/bash
 # file: tests/run.sh
 
-cd $(dirname $0)
-source ../common.inc
+set -e
 
-[ ! -z ${SHUNIT_COMMAND} ] || SHUNIT_COMMAND=./shunit2
 [ ! -z ${TEST_SCRIPT} ] || TEST_SCRIPT=../install.sh
 TEST_SCRIPT_FULL_PATH=$(cd $(dirname ${TEST_SCRIPT}); pwd | tr '\r\n' '/'; echo $(basename ${TEST_SCRIPT}))
-HELP_MESSAGE="Tool for running unit tests against ${TEST_SCRIPT_FULL_PATH}
-Usage: $ ./run.sh"
 
 # Scripts possible options
-STANDALONE_MODE=snadalone
+STANDALONE_MODE=standalone
 WEBROOT_MODE=webroot
+CHECK_MODE=check
 DOMAIN_NAME=local.test.com
 #
 SUDO=sudo
-
-# Check if shunit is available in local environment
-if [ -z "${SHUNIT_COMMAND}" ] || [ -z "$(which ${SHUNIT_COMMAND})" ]; then
-    msg "${HELP_MESSAGE}"
-    error "Can not be found ${SHUNIT_COMMAND:-shunit}, please fix."
-fi
 
 # Check if ${TEST_SCRIPT} is available for testing
 if [ ! -e "${TEST_SCRIPT}" ] || [ ! -x "${TEST_SCRIPT}" ]; then
     error "Can not be found script for testing! Was declared, that it is located by path: ${TEST_SCRIPT_FULL_PATH}; pwd).Please fix."
 fi
 
-msg "Running unit tests against $(basename $TEST_SCRIPT)"
-
-#!/bin/sh
-
-testAdministrativeRights() {
-    OPTIONS="-m ${STANDALONE_MODE} -d ${DOMAIN_NAME}"
-    ${TEST_SCRIPT} ${OPTIONS} >$stdoutF 2>&1
+test_usage_application_without_root_rights() {
+    OPTIONS="-m ${CHECK_MODE}"
+    STDOUT=$(${TEST_SCRIPT} ${OPTIONS})
     rtrn=$?
-    echo ${stdoutF}
-    assertTrue "Running script inside the unprivileged user has to cause error." "[ ${rtrn} -ne 0  ]"
+    assert_not_equals ${rtrn} 0 "Must be error without administrative rights."
+    assert_equals "ERROR! Administrative rights are required." "${STDOUT}" "Checking root rights required failed."
 }
 
-. ${SHUNIT_COMMAND}
+test_usage_application_with_root_rights() {
+    OPTIONS="-m ${CHECK_MODE}"
+    STDOUT=$(${SUDO} ${TEST_SCRIPT} ${OPTIONS})
+    rtrn=$?
+    assert_equals ${rtrn} 0 "Incorrect exit code by running application with root rights."
+}
