@@ -6,7 +6,7 @@ PARAMETERS_COUNT=$#
 MODE=standalone
 WEB_ROOT_FOLDER=""
 SHOW_HELP=false
-[ -z "${CHECK}"] || CHECK=false
+[ -z "${DRY_RUN}" ] || DRY_RUN=false
 HELP_MESSAGE="Usage: ./$(basename $0) [OPTION]
 Script for installing and configuring letsencrypt certificates usage.
 Maintainer: devops@onix-systems.com
@@ -64,9 +64,4 @@ fi
 # Check root rights
 if [ "$(id -u)" -ne 0 ]; then
     error "Administrative rights are required."
-fi
-
-# If selected mode check, then -> exit without any further execution
-if [ ! -z "${CHECK}" ] && [ "${CHECK}" == true ]; then
-    msg "Was used check only mode." 0
 fi

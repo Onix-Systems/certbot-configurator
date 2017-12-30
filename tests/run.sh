@@ -11,8 +11,8 @@ STANDALONE_MODE=standalone
 WEBROOT_MODE=webroot
 FAKE_MODE=fake
 DOMAIN_NAME=local.test.com
-ENABLE_CHECK_MODE="export CHECK=true;"
-DISABLE_CHECK_MODE="export CHECK=false;"
+ENABLE_DRY_RUN_MODE="export DRY_RUN=true;"
+DISABLE_DRY_RUN_MODE="export DRY_RUN=false;"
 #
 SUDO=sudo
 
@@ -22,7 +22,7 @@ if [ ! -e "${TEST_SCRIPT}" ] || [ ! -x "${TEST_SCRIPT}" ]; then
 fi
 
 test_application_without_root_rights() {
-    ${ENABLE_CHECK_MODE}
+    ${ENABLE_DRY_RUN_MODE}
     STDOUT=$(${TEST_SCRIPT} ${OPTIONS} -m ${STANDALONE_MODE})
     rtrn=$?
     assert_not_equals 0 ${rtrn} "Must be error without administrative rights."
@@ -30,24 +30,24 @@ test_application_without_root_rights() {
 }
 
 test_application_with_root_rights() {
-    ${ENABLE_CHECK_MODE}
+    ${ENABLE_DRY_RUN_MODE}
     STDOUT=$(${SUDO} ${TEST_SCRIPT} -m ${STANDALONE_MODE})
     rtrn=$?
     assert_equals 0 ${rtrn} "Incorrect exit code by running application with root rights."
 }
 
 testing_mode_options_checking() {
-  ${ENABLE_CHECK_MODE}
-  STDOUT=$(${SUDO} ${TEST_SCRIPT} -m ${STANDALONE_MODE})
-  rtrn=$?
-  assert_equals 0 ${rtrn} "Incorrect exit code by running application in ${STANDALONE_MODE} mode."
-  STDOUT=$(${SUDO} ${TEST_SCRIPT} -m ${WEBROOT_MODE})
-  rtrn=$?
-  assert_equals 0 ${rtrn} "Incorrect exit code by running application in ${WEBROOT_MODE} mode."
-  STDOUT=$(${SUDO} ${TEST_SCRIPT} --mode ${WEBROOT_MODE})
-  rtrn=$?
-  assert_equals 0 ${rtrn} "Incorrect exit code by running application in ${WEBROOT_MODE} mode by using long option name --mode."
-  STDOUT=$(${SUDO} ${TEST_SCRIPT} -m ${FAKE_MODE})
-  rtrn=$?
-  assert_equals "ERROR! Unsupported mode. See help." "${STDOUT}" "Incorrect message when it is specified incorrect mode."
+    ${ENABLE_DRY_RUN_MODE}
+    STDOUT=$(${SUDO} ${TEST_SCRIPT} -m ${STANDALONE_MODE})
+    rtrn=$?
+    assert_equals 0 ${rtrn} "Incorrect exit code by running application in ${STANDALONE_MODE} mode."
+    STDOUT=$(${SUDO} ${TEST_SCRIPT} -m ${WEBROOT_MODE})
+    rtrn=$?
+    assert_equals 0 ${rtrn} "Incorrect exit code by running application in ${WEBROOT_MODE} mode."
+    STDOUT=$(${SUDO} ${TEST_SCRIPT} --mode ${WEBROOT_MODE})
+    rtrn=$?
+    assert_equals 0 ${rtrn} "Incorrect exit code by running application in ${WEBROOT_MODE} mode by using long option name --mode."
+    STDOUT=$(${SUDO} ${TEST_SCRIPT} -m ${FAKE_MODE})
+    rtrn=$?
+    assert_equals "ERROR! Unsupported mode. See help." "${STDOUT}" "Incorrect message when it is specified incorrect mode."
 }
