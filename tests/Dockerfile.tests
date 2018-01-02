@@ -8,6 +8,7 @@ ENV USER=user \
 
 RUN apt-get update && \
     apt-get install -y \
+        dnsutils \
         git \
         sudo && \
     apt-get clean && \

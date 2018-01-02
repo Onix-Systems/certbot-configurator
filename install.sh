@@ -6,6 +6,7 @@ PARAMETERS_COUNT=$#
 MODE=standalone
 WEB_ROOT_FOLDER=""
 SHOW_HELP=false
+DNS_SERVER=8.8.8.8
 [ -z "${DRY_RUN}" ] || DRY_RUN=false
 HELP_MESSAGE="Usage: ./$(basename $0) [OPTION]
 Script for installing and configuring letsencrypt certificates usage.
@@ -32,26 +33,26 @@ do
     case $key in
         -m|--mode)
             if [ "$(echo $2 | grep '^standalone$\|^webroot$')" != "" ]; then MODE="$2";
-            else echo "ERROR! Unsupported mode. See help."; exit 1; fi
+            else error "Unsupported mode. See help.";
+            fi
             shift
         ;;
         -r|--root)
             if [ -d "$2" ]; then
                 WEB_ROOT_FOLDER=$2
+            else error "Specified folder does not exist. Please check.";
             fi
             shift
         ;;
         -d|--domain-name)
             DN="$2";
-            # Check if such name exist and resolved by nslookup
             shift
         ;;
         -h|--help)
             SHOW_HELP=true
         ;;
         *) # unknown option
-            echo "ERROR! Unknown option. See help."
-            exit 1
+            error "Unknown option. See help."
         ;;
     esac
 shift
@@ -59,6 +60,12 @@ done
 
 if [ "${SHOW_HELP}" == "true" ] || [ "${PARAMETERS_COUNT}" -eq 0 ]; then
     msg "${HELP_MESSAGE}" 0
+fi
+
+if [ -z "${DN}" ]; then
+    error "Domain name is required. See help."
+elif [ "$(check_domain_name ${DN})" != 0 ]; then
+    error "Was defined incorrect domain name."
 fi
 
 # Check root rights

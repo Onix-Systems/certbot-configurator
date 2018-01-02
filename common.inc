@@ -14,3 +14,10 @@ function msg {
 function error {
     msg "ERROR! $1" 1
 }
+
+function check_domain_name {
+    set +e
+    host $1 &> /dev/null || getent hosts $1 &> /dev/null
+    echo $?
+    set -e
+}
