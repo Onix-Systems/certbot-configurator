@@ -10,7 +10,7 @@
     - docker build -t ${TEST_IMAGE} -f tests/Dockerfile.tests .
 
   script:
-    - docker run --rm -v $(pwd):/certbot-configurator -w /certbot-configurator/tests -e DOMAIN_NAME=${DOMAIN_NAME} --add-host ${DOMAIN_NAME}:172.17.0.1 ${TEST_IMAGE} bash_unit run.sh
+    - docker run --rm -v $(pwd):/certbot-configurator -w /certbot-configurator/tests -e DOMAIN_NAME=${DOMAIN_NAME} --add-host ${DOMAIN_NAME}:172.17.0.1 ${TEST_IMAGE} bash_unit tests.sh
 
   after_script:
     - docker rmi ${TEST_IMAGE}

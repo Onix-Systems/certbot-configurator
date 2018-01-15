@@ -16,6 +16,7 @@ RUN apt-get update && \
     git clone https://github.com/pgrange/bash_unit.git ${SOURCE_FOLDER} && \
     ln -s ${SOURCE_FOLDER}/bash_unit /usr/sbin/bash_unit && \
     adduser --disabled-password --quiet --disabled-login --gecos "" ${USER} && \
-    echo "${USER} ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/${USER}
+    echo "${USER} ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/${USER} && \
+    echo -e "8\n23\n" | apt-get install -y tzdata
 
 USER ${USER}

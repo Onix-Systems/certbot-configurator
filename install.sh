@@ -1,12 +1,19 @@
 #!/bin/bash
 
+#
+# Maintainer: devops@onix-systems.com
+# https://onix-systems.com
+#
+
 set -e
 
 PARAMETERS_COUNT=$#
 MODE=standalone
 WEB_ROOT_FOLDER=""
 SHOW_HELP=false
+CHECK_ONLY=false
 DNS_SERVER=8.8.8.8
+MODE=webroot
 [ -z "${DRY_RUN}" ] || DRY_RUN=false
 HELP_MESSAGE="Usage: ./$(basename $0) [OPTION]
 Script for installing and configuring letsencrypt certificates usage.
@@ -23,6 +30,10 @@ Examples:
     \$ ./$(basename $0) --mode standalone --dn staging.test.com
     \$ ./$(basename $0) -m weboot -r /var/www/html --dn staging.test.com
 "
+
+#
+# --check-only is a hidden option, is used only for testing functionality
+#
 
 cd $(dirname $0)
 source common.inc
@@ -51,6 +62,9 @@ do
         -h|--help)
             SHOW_HELP=true
         ;;
+        --check-only)
+            CHECK_ONLY=true
+        ;;
         *) # unknown option
             error "Unknown option. See help."
         ;;
@@ -68,7 +82,25 @@ elif [ "$(check_domain_name ${DN})" != 0 ]; then
     error "Was defined incorrect domain name."
 fi
 
+if [ "${MODE}" == "webroot" ]; then
+    # Check required options
+    if [ -z "${WEB_ROOT_FOLDER}" ]; then
+        error "The mode [ webroot ] requires --root option."
+    fi
+fi
+
 # Check root rights
 if [ "$(id -u)" -ne 0 ]; then
     error "Administrative rights are required."
 fi
+
+if [ "${CHECK_ONLY}" == "true" ]; then
+    exit 0
+fi
+# Installing certbot and other dependencies
+msg "Installing dependencies"
+
+apt-get update -qq
+apt-get install -qq --yes software-properties-common
+add-apt-repository --yes --update ppa:certbot/certbot &> /dev/null
+apt-get install -qq --yes certbot
