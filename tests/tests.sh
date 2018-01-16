@@ -96,9 +96,10 @@ testing_06_domain_name_option() {
     assert_equals 0 ${rtrn} "Incorrect exit code on testing domain name option."
 }
 
-testing_07_installation() {
+testing_07_certbot_installation() {
     ${ENABLE_DRY_RUN_MODE}
-    STDOUT=$(${SUDO} ${TEST_SCRIPT} -m ${STANDALONE_MODE} -d ${DOMAIN_NAME})
+    STDOUT=$(${SUDO} ${TEST_SCRIPT} -m ${STANDALONE_MODE} -d ${DOMAIN_NAME} --skip-certificate-retrieving)
     rtrn=$?
+    echo ${STDOUT}
     assert_equals 0 ${rtrn} "Incorrect exit code of testing the installation."
 }

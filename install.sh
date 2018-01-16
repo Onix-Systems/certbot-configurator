@@ -14,6 +14,10 @@ SHOW_HELP=false
 CHECK_ONLY=false
 DNS_SERVER=8.8.8.8
 MODE=webroot
+CERTBOT_OPTIONS="--agree-tos"
+SKIP_CERTIFICATE_RETRIEVING=false
+COMMAND=""
+SCRIPT_PATH=/usr/local/sbin/check_certs.sh
 [ -z "${DRY_RUN}" ] || DRY_RUN=false
 HELP_MESSAGE="Usage: ./$(basename $0) [OPTION]
 Script for installing and configuring letsencrypt certificates usage.
@@ -25,6 +29,7 @@ Options:
     -r, --root <folder>       Set webroot folder to use for DN verification. Should be prepared manually.
     -d, --domain-name [dn]    List of domain names for implementing them into certificate.
     -h, --help                Show help
+    -c, --command <command>   Command that can be used for reload application to apply new certificates.
 
 Examples:
     \$ ./$(basename $0) --mode standalone --dn staging.test.com
@@ -59,11 +64,22 @@ do
             DN="$2";
             shift
         ;;
+        -m|--email)
+            CERTBOT_OPTIONS="${CERTBOT_OPTIONS} -m $2"
+            shift
+        ;;
         -h|--help)
             SHOW_HELP=true
         ;;
         --check-only)
             CHECK_ONLY=true
+        ;;
+        --skip-certificate-retrieving)
+            SKIP_CERTIFICATE_RETRIEVING=true
+        ;;
+        -c|--command)
+            COMMAND=$2
+            shift
         ;;
         *) # unknown option
             error "Unknown option. See help."
@@ -87,6 +103,13 @@ if [ "${MODE}" == "webroot" ]; then
     if [ -z "${WEB_ROOT_FOLDER}" ]; then
         error "The mode [ webroot ] requires --root option."
     fi
+    # Generate certbot options
+    CERTBOT_OPTIONS="certonly --webroot --webroot-path ${WEB_ROOT_FOLDER} -d ${DN} ${CERTBOT_OPTIONS}"
+elif [ "${MODE}" == "standalone" ]; then
+    #
+    # TODO. Process generating certbot options for standalone mode
+    #
+    :
 fi
 
 # Check root rights
@@ -103,4 +126,9 @@ msg "Installing dependencies"
 apt-get update -qq
 apt-get install -qq --yes software-properties-common
 add-apt-repository --yes --update ppa:certbot/certbot &> /dev/null
-apt-get install -qq --yes certbot
+apt-get install -qq --yes certbot &> /dev/null
+if [ "${SKIP_CERTIFICATE_RETRIEVING}" == "false" ]; then
+    certbot ${CERTBOT_OPTIONS}
+else
+    msg "Skipping the retrieving of certificate. For testing purpose only."
+fi
