@@ -124,7 +124,7 @@ fi
 msg "Installing dependencies"
 
 apt-get update -qq
-apt-get install -qq --yes software-properties-common
+apt-get install -qq --yes software-properties-common &> /dev/null
 add-apt-repository --yes --update ppa:certbot/certbot &> /dev/null
 apt-get install -qq --yes certbot &> /dev/null
 if [ "${SKIP_CERTIFICATE_RETRIEVING}" == "false" ]; then
