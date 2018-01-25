@@ -102,3 +102,15 @@ testing_07_certbot_installation() {
     rtrn=$?
     assert_equals 0 ${rtrn} "Incorrect exit code of testing the installation."
 }
+
+testing_08_crontask() {
+    ${ENABLE_DRY_RUN_MODE}
+    CRON_TASK_FILENAME="/etc/cron.d/reload-$(echo ${DOMAIN_NAME} | cut -d '.' -f 1)"
+    COMMAND="/usr/sbin/nginx -s reload"
+    assert_fails "test -f ${CRON_TASK_FILENAME}" "File ${CRON_TASK_FILENAME} has not to be existed on this step."
+    STDOUT=$(${SUDO} ${TEST_SCRIPT} -m ${STANDALONE_MODE} -d ${DOMAIN_NAME} --command "${COMMAND}" --skip-certificate-retrieving)
+    rtrn=$?
+    assert "test -f ${CRON_TASK_FILENAME}" "Could not find a file ${CRON_TASK_FILENAME}."
+    assert "${SUDO} rm -f ${CRON_TASK_FILENAME}" "Could not delete cron task file ${CRON_TASK_FILENAME}."
+    assert_fails "test -f ${CRON_TASK_FILENAME}" "File ${CRON_TASK_FILENAME} must be deleted on this step already."
+}

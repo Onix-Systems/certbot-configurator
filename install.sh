@@ -17,6 +17,8 @@ MODE=webroot
 CERTBOT_OPTIONS="--agree-tos"
 SKIP_CERTIFICATE_RETRIEVING=false
 COMMAND=""
+CROND_FOLDER="/etc/cron.d/"
+CRON_TASK="reload"
 SCRIPT_PATH=/usr/local/sbin/check_certs.sh
 [ -z "${DRY_RUN}" ] || DRY_RUN=false
 HELP_MESSAGE="Usage: ./$(basename $0) [OPTION]
@@ -62,6 +64,7 @@ do
         ;;
         -d|--domain-name)
             DN="$2";
+            CRON_TASK="${CRON_TASK}-$(echo ${DN} | cut -d '.' -f 1)"
             shift
         ;;
         -m|--email)
@@ -127,6 +130,16 @@ apt-get update -qq
 apt-get install -qq --yes software-properties-common &> /dev/null
 add-apt-repository --yes --update ppa:certbot/certbot &> /dev/null
 apt-get install -qq --yes certbot &> /dev/null
+
+echo "Adding cron task for reloading service, that uses this ceritificate"
+if [ ! -z "${COMMAND}" ]; then
+cat << EOF > ${CROND_FOLDER}/${CRON_TASK}
+# Command that will help to apply new certificate to use by domain name:
+# ${DN}
+0 5 * * 1 root ${COMMAND}
+EOF
+fi
+
 if [ "${SKIP_CERTIFICATE_RETRIEVING}" == "false" ]; then
     certbot ${CERTBOT_OPTIONS}
 else
