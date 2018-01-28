@@ -14,7 +14,7 @@ SHOW_HELP=false
 CHECK_ONLY=false
 DNS_SERVER=8.8.8.8
 MODE=webroot
-CERTBOT_OPTIONS="--agree-tos"
+CERTBOT_OPTIONS="--agree-tos --renew-by-default --rsa-key-size 4096"
 SKIP_CERTIFICATE_RETRIEVING=false
 COMMAND=""
 CROND_FOLDER="/etc/cron.d/"
@@ -29,7 +29,7 @@ Options:
                                 * standalone - run certbot in standalone mode.
                                 * webroot    - use prepared webroot for verification specified DN.
     -r, --root <folder>       Set webroot folder to use for DN verification. Should be prepared manually.
-    -d, --domain-name [dn]    List of domain names for implementing them into certificate.
+    -d, --domain-name [dn]    Comma-separated domain names for retrieving certificate for them.
     -h, --help                Show help
     -c, --command <command>   Command that can be used for reload application to apply new certificates.
 
@@ -109,10 +109,7 @@ if [ "${MODE}" == "webroot" ]; then
     # Generate certbot options
     CERTBOT_OPTIONS="certonly --webroot --webroot-path ${WEB_ROOT_FOLDER} -d ${DN} ${CERTBOT_OPTIONS}"
 elif [ "${MODE}" == "standalone" ]; then
-    #
-    # TODO. Process generating certbot options for standalone mode
-    #
-    :
+    CERTBOT_OPTIONS="certonly --standalone -d ${DN} ${CERTBOT_OPTIONS}"
 fi
 
 # Check root rights
@@ -134,13 +131,14 @@ apt-get install -qq --yes certbot &> /dev/null
 echo "Adding cron task for reloading service, that uses this ceritificate"
 if [ ! -z "${COMMAND}" ]; then
 cat << EOF > ${CROND_FOLDER}/${CRON_TASK}
-# Command that will help to apply new certificate to use by domain name:
+# Command that will help to apply new certificate to use by user's service
 # ${DN}
 0 5 * * 1 root ${COMMAND}
 EOF
 fi
 
 if [ "${SKIP_CERTIFICATE_RETRIEVING}" == "false" ]; then
+    echo "Running request for retrieving certificate"
     certbot ${CERTBOT_OPTIONS}
 else
     msg "Skipping the retrieving of certificate. For testing purpose only."
