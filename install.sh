@@ -136,11 +136,11 @@ if [ $RTRN -ne 0 ]; then
 
     echo "Adding cron task for reloading service, that uses this ceritificate"
     if [ ! -z "${COMMAND}" ]; then
-    cat << EOF > ${CROND_FOLDER}/${CRON_TASK}
-    # Command that will help to apply new certificate to use by user's service
-    # ${DN}
-    0 5 * * 1 root ${COMMAND}
-    EOF
+cat << EOF > ${CROND_FOLDER}/${CRON_TASK}
+        # Command that will help to apply new certificate to use by user's service
+        # ${DN}
+        0 5 * * 1 root ${COMMAND}
+EOF
     fi
 
     if [ "${SKIP_CERTIFICATE_RETRIEVING}" == "false" ]; then
