@@ -125,7 +125,7 @@ set +e
 docker version &> /dev/null
 RTRN=$?
 set -e
-if [ $RTRN -ne 0]; then
+if [ $RTRN -ne 0 ]; then
     # Installing certbot and other dependencies
     msg "Installing dependencies"
 
