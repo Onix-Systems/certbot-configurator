@@ -120,26 +120,47 @@ fi
 if [ "${CHECK_ONLY}" == "true" ]; then
     exit 0
 fi
-# Installing certbot and other dependencies
-msg "Installing dependencies"
 
-apt-get update -qq
-apt-get install -qq --yes software-properties-common &> /dev/null
-add-apt-repository --yes --update ppa:certbot/certbot &> /dev/null
-apt-get install -qq --yes certbot &> /dev/null
+set +e
+docker version &> /dev/null
+RTRN=$?
+set -e
+if [ $RTRN -ne 0]; then
+    # Installing certbot and other dependencies
+    msg "Installing dependencies"
 
-echo "Adding cron task for reloading service, that uses this ceritificate"
-if [ ! -z "${COMMAND}" ]; then
-cat << EOF > ${CROND_FOLDER}/${CRON_TASK}
-# Command that will help to apply new certificate to use by user's service
-# ${DN}
-0 5 * * 1 root ${COMMAND}
-EOF
-fi
+    apt-get update -qq
+    apt-get install -qq --yes software-properties-common &> /dev/null
+    add-apt-repository --yes --update ppa:certbot/certbot &> /dev/null
+    apt-get install -qq --yes certbot &> /dev/null
 
-if [ "${SKIP_CERTIFICATE_RETRIEVING}" == "false" ]; then
-    echo "Running request for retrieving certificate"
-    certbot ${CERTBOT_OPTIONS}
+    echo "Adding cron task for reloading service, that uses this ceritificate"
+    if [ ! -z "${COMMAND}" ]; then
+    cat << EOF > ${CROND_FOLDER}/${CRON_TASK}
+    # Command that will help to apply new certificate to use by user's service
+    # ${DN}
+    0 5 * * 1 root ${COMMAND}
+    EOF
+    fi
+
+    if [ "${SKIP_CERTIFICATE_RETRIEVING}" == "false" ]; then
+        echo "Running request for retrieving certificate"
+        certbot ${CERTBOT_OPTIONS}
+    else
+        msg "Skipping the retrieving of certificate. For testing purpose only."
+    fi
 else
-    msg "Skipping the retrieving of certificate. For testing purpose only."
+    echo "Was found installed docker-engine. Let's try to use it."
+    echo "Running reques for retrieving certificate"
+    if [ ! -z "${WEB_ROOT_FOLDER}" ]; then
+        OPTIONS="-v ${WEB_ROOT_FOLDER}:${WEB_ROOT_FOLDER}"
+    else
+        OPTIONS=""
+    fi
+    docker run --rm \
+        -v "./data/letsencrypt/etc:/etc/letsencrypt" \
+        -v "./data/letsencrypt/var:/var/lib/letsencrypt" \
+        ${OPTION} \
+        quay.io/letsencrypt/letsencrypt \
+        ${CERTBOT_OPTIONS}
 fi
