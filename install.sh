@@ -179,6 +179,6 @@ cat << EOF > ${CROND_FOLDER}/${CRON_TASK}
 SHELL=/bin/bash
 # Command that will help to renew and reload service for using new certificate
 # ${DN}
-${CRON_TASK_SCHEDULE} root docker run --rm -v "$(pwd)/data/letsencrypt/etc:/etc/letsencrypt" -v "$(pwd)/data/letsencrypt/var:/var/lib/letsencrypt" certbot/certbot renew ${COMMAND}
+${CRON_TASK_SCHEDULE} root docker run --rm ${OPTIONS} -v "$(pwd)/data/letsencrypt/etc:/etc/letsencrypt" -v "$(pwd)/data/letsencrypt/var:/var/lib/letsencrypt" certbot/certbot renew ${COMMAND}
 EOF
 fi
