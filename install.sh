@@ -157,7 +157,7 @@ EOF
     fi
 else
     echo "Was found installed docker-engine. Let's try to use it."
-    echo "Running reques for retrieving certificate"
+    echo "Running request for retrieving certificate"
     if [ ! -z "${WEB_ROOT_FOLDER}" ]; then
         OPTIONS="-v ${WEB_ROOT_FOLDER}:${WEB_ROOT_FOLDER}"
     else
