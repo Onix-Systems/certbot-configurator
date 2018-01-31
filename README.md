@@ -21,7 +21,8 @@ Options:
                                 * webroot    - use prepared webroot for verification specified DN.
     -r, --root <folder>       Set webroot folder to use for DN verification. Should be prepared manually.
     -d, --domain-name [dn]    Comma-separated domain names for retrieving certificate for them.
-    -h, --help                Show help
+    --email                   Set email for letsencrypt notifications.
+    -h, --help                Show help.
     -c, --command <command>   Command that can be used for reload application to apply new certificates.
 
 Examples:
