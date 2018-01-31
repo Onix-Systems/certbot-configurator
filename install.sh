@@ -68,7 +68,7 @@ do
             CRON_TASK="${CRON_TASK}-$(echo ${DN} | cut -d '.' -f 1)"
             shift
         ;;
-        -m|--email)
+        --email)
             CERTBOT_OPTIONS="${CERTBOT_OPTIONS} -m $2"
             shift
         ;;
