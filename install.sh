@@ -35,8 +35,8 @@ Options:
     -c, --command <command>   Command that can be used for reload application to apply new certificates.
 
 Examples:
-    \$ ./$(basename $0) --mode standalone --dn staging.test.com
-    \$ ./$(basename $0) -m weboot -r /var/www/html --dn staging.test.com
+    \$ ./$(basename $0) --mode standalone -d staging.test.com
+    \$ ./$(basename $0) -m weboot -r /var/www/html --domain-name staging.test.com
 "
 
 #

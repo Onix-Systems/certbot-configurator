@@ -25,7 +25,7 @@ Options:
     -c, --command <command>   Command that can be used for reload application to apply new certificates.
 
 Examples:
-    $ ./install.sh --mode standalone --dn staging.test.com
-    $ ./install.sh -m weboot -r /var/www/html --dn staging.test.com
+    $ ./install.sh --mode standalone -d staging.test.com
+    $ ./install.sh -m weboot -r /var/www/html --domain-name staging.test.com
 
 ```
