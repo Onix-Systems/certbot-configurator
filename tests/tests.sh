@@ -114,3 +114,32 @@ testing_08_crontask() {
     assert "${SUDO} rm -f ${CRON_TASK_FILENAME}" "Could not delete cron task file ${CRON_TASK_FILENAME}."
     assert_fails "test -f ${CRON_TASK_FILENAME}" "File ${CRON_TASK_FILENAME} must be deleted on this step already."
 }
+
+testing_09_docker_section_usage() {
+    ${ENABLE_DRY_RUN_MODE}
+    COMMAND="/usr/sbin/nginx -s reload"
+    assert "${SUDO} apt-get update && sudo apt-get install -y docker.io" "Can not be installed docker.io package."
+    assert "${SUDO} /etc/init.d/docker start" "Can not be running docker service."
+    assert "${SUDO} docker ps" "Docker service is not running."
+    STDOUT=$(${SUDO} ${TEST_SCRIPT} -m ${STANDALONE_MODE} -d ${DOMAIN_NAME} --command "${COMMAND}" --skip-certificate-retrieving)
+    rtrn=$?
+    STDOUT=$(echo ${STDOUT} | grep "Was found installed docker-engine. Let's try to use it.")
+    rtrn=$?
+    assert_equals 0 ${rtrn} "Was not found docker section usage, but it had to be used."
+}
+
+testing_10_docker_section_crontask() {
+    CRON_TASK_FILENAME="/etc/cron.d/reload-$(echo ${DOMAIN_NAME} | cut -d '.' -f 1)"
+    COMMAND="/usr/sbin/nginx -s reload"
+    STDOUT=$(${SUDO} ${TEST_SCRIPT} -m ${STANDALONE_MODE} -d ${DOMAIN_NAME} --command "${COMMAND}" --skip-certificate-retrieving)
+    rtrn=$?
+    assert "test -f ${CRON_TASK_FILENAME}" "Could not find a file ${CRON_TASK_FILENAME}."
+    STDOUT=$(cat ${CRON_TASK_FILENAME} | grep "docker run")
+    rtrn=$?
+    assert_equals 0 ${rtrn} "Incorrect cron task renew command."
+    STDOUT=$(cat ${CRON_TASK_FILENAME} | grep "${COMMAND}")
+    rtrn=$?
+    assert_equals 0 ${rtrn} "Could not find reload service command in cron task file."
+    assert "${SUDO} rm -f ${CRON_TASK_FILENAME}" "Could not delete cron task file ${CRON_TASK_FILENAME}."
+    assert_fails "test -f ${CRON_TASK_FILENAME}" "File ${CRON_TASK_FILENAME} must be deleted on this step already."
+}
