@@ -98,8 +98,12 @@ fi
 
 if [ -z "${DN}" ]; then
     error "Domain name is required. See help."
-elif [ "$(check_domain_name ${DN})" != 0 ]; then
-    error "Was defined incorrect domain name."
+else
+    for NAME in $(echo ${DN} | sed "s/,/ /g"); do
+        if [ "$(check_domain_name ${NAME})" != 0 ]; then
+            error "Was defined incorrect domain name."
+        fi
+    done
 fi
 
 if [ "${MODE}" == "webroot" ]; then

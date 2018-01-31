@@ -126,11 +126,13 @@ testing_09_docker_section_usage() {
     STDOUT=$(echo ${STDOUT} | grep "Was found installed docker-engine. Let's try to use it.")
     rtrn=$?
     assert_equals 0 ${rtrn} "Was not found docker section usage, but it had to be used."
+    assert "${SUDO} /etc/init.d/docker stop" "Can not be stopped docker service"
 }
 
 testing_10_docker_section_crontask() {
     CRON_TASK_FILENAME="/etc/cron.d/reload-$(echo ${DOMAIN_NAME} | cut -d '.' -f 1)"
     COMMAND="/usr/sbin/nginx -s reload"
+    assert "${SUDO} /etc/init.d/docker start" "Can not be running docker service."
     STDOUT=$(${SUDO} ${TEST_SCRIPT} -m ${STANDALONE_MODE} -d ${DOMAIN_NAME} --command "${COMMAND}" --skip-certificate-retrieving)
     rtrn=$?
     assert "test -f ${CRON_TASK_FILENAME}" "Could not find a file ${CRON_TASK_FILENAME}."
@@ -142,4 +144,5 @@ testing_10_docker_section_crontask() {
     assert_equals 0 ${rtrn} "Could not find reload service command in cron task file."
     assert "${SUDO} rm -f ${CRON_TASK_FILENAME}" "Could not delete cron task file ${CRON_TASK_FILENAME}."
     assert_fails "test -f ${CRON_TASK_FILENAME}" "File ${CRON_TASK_FILENAME} must be deleted on this step already."
+    assert "${SUDO} /etc/init.d/docker stop" "Can not be stopped docker service"
 }
