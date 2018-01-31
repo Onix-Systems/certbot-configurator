@@ -166,7 +166,7 @@ else
         docker run --rm \
             -v "$(pwd)/data/letsencrypt/etc:/etc/letsencrypt" \
             -v "$(pwd)/data/letsencrypt/var:/var/lib/letsencrypt" \
-            ${OPTION} \
+            ${OPTIONS} \
             certbot/certbot \
             ${CERTBOT_OPTIONS}
     fi
