@@ -164,8 +164,8 @@ else
     fi
     if [ "${SKIP_CERTIFICATE_RETRIEVING}" == "false" ]; then
         docker run --rm \
-            -v "./data/letsencrypt/etc:/etc/letsencrypt" \
-            -v "./data/letsencrypt/var:/var/lib/letsencrypt" \
+            -v "$(pwd)/data/letsencrypt/etc:/etc/letsencrypt" \
+            -v "$(pwd)/data/letsencrypt/var:/var/lib/letsencrypt" \
             ${OPTION} \
             quay.io/letsencrypt/letsencrypt \
             ${CERTBOT_OPTIONS}
